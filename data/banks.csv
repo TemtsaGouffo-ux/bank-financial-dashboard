@@ -1,0 +1,12 @@
+BankID,BankName,Ticker,Country,Region,HQCity,Latitude,Longitude,ReportingCurrency
+1,JPMorgan Chase,JPM,United States,Americas,New York,40.7128,-74.0060,USD
+2,Bank of America,BAC,United States,Americas,Charlotte,35.2271,-80.8431,USD
+3,Citigroup,C,United States,Americas,New York,40.7128,-74.0060,USD
+4,Wells Fargo,WFC,United States,Americas,San Francisco,37.7749,-122.4194,USD
+5,Goldman Sachs,GS,United States,Americas,New York,40.7128,-74.0060,USD
+6,BNP Paribas,BNP,France,Europe,Paris,48.8566,2.3522,EUR
+7,Banco Santander,SAN,Spain,Europe,Madrid,40.4168,-3.7038,EUR
+8,Deutsche Bank,DBK,Germany,Europe,Frankfurt,50.1109,8.6821,EUR
+9,Barclays,BARC,United Kingdom,Europe,London,51.5074,-0.1278,GBP
+10,UBS Group,UBSG,Switzerland,Europe,Zurich,47.3769,8.5417,USD
+11,Societe Generale,GLE,France,Europe,Paris,48.8566,2.3522,EUR

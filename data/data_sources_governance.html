@@ -1,0 +1,206 @@
+
+<style>
+  body { font-family: var(--font-sans); }
+  .section { margin-bottom: 24px; }
+  .region-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--color-text-tertiary); margin-bottom: 8px; padding-left: 4px; }
+  .bank-card { border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 10px; background: var(--color-background-secondary); }
+  .bank-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bank-tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 999px; }
+  .tag-us { background: #E6F1FB; color: #0C447C; }
+  .tag-eu { background: #FAEEDA; color: #633806; }
+  .bank-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .bank-ticker { font-size: 12px; color: var(--color-text-tertiary); }
+  .links { display: flex; flex-direction: column; gap: 5px; }
+  .link-row { display: flex; align-items: flex-start; gap: 8px; }
+  .link-type { font-size: 11px; color: var(--color-text-tertiary); width: 110px; flex-shrink: 0; padding-top: 2px; }
+  .link-row a { font-size: 12px; color: var(--color-text-info); text-decoration: none; word-break: break-all; display: flex; align-items: center; gap: 4px; }
+  .link-row a:hover { text-decoration: underline; }
+  .note-box { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; margin-top: 16px; font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+  .note-box b { color: var(--color-text-primary); font-weight: 500; }
+  .fx-box { border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; background: var(--color-background-secondary); margin-bottom: 10px; }
+  .fx-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+  h3 { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 10px 0; }
+  .divider { border: none; border-top: 1px solid var(--color-border-tertiary); margin: 20px 0; }
+</style>
+
+<div style="padding: 4px 0 16px">
+  <h3>Sources officielles — Gouvernance des données</h3>
+
+  <div class="section">
+    <div class="region-label">🇺🇸 Amériques — 5 banques</div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-us">USD</span>
+        <span class="bank-name">JPMorgan Chase</span>
+        <span class="bank-ticker">NYSE : JPM</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.jpmorganchase.com/ir" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> jpmorganchase.com/ir</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.jpmorganchase.com/ir/annual-report/2024" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Report 2024</a></div>
+        <div class="link-row"><span class="link-type">SEC / 10-K</span><a href="https://jpmorganchaseco.gcs-web.com/ir/sec-other-filings/financial-statements" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Financial Statements (SEC)</a></div>
+        <div class="link-row"><span class="link-type">Résultats trim.</span><a href="https://www.jpmorganchase.com/ir/quarterly-earnings" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Quarterly Earnings</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-us">USD</span>
+        <span class="bank-name">Bank of America</span>
+        <span class="bank-ticker">NYSE : BAC</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://investor.bankofamerica.com" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> investor.bankofamerica.com</a></div>
+        <div class="link-row"><span class="link-type">Résultats trim.</span><a href="https://investor.bankofamerica.com/quarterly-earnings" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Quarterly Earnings</a></div>
+        <div class="link-row"><span class="link-type">SEC / 10-K</span><a href="https://investor.bankofamerica.com/regulatory-and-other-filings" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> SEC Filings (10-K, 10-Q, 8-K)</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-us">USD</span>
+        <span class="bank-name">Citigroup</span>
+        <span class="bank-ticker">NYSE : C</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.citigroup.com/global/investors" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> citigroup.com/global/investors</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.citigroup.com/global/investors/annual-reports-and-proxy-statements" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports & Proxy</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-us">USD</span>
+        <span class="bank-name">Wells Fargo</span>
+        <span class="bank-ticker">NYSE : WFC</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.wellsfargo.com/about/investor-relations/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> wellsfargo.com/investor-relations</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.wellsfargo.com/about/investor-relations/annual-reports/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-us">USD</span>
+        <span class="bank-name">Goldman Sachs</span>
+        <span class="bank-ticker">NYSE : GS</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.goldmansachs.com/investor-relations" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> goldmansachs.com/investor-relations</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.goldmansachs.com/investor-relations/financials/annual-reports" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports (2025, 2024…)</a></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="region-label">🇪🇺🇬🇧🇨🇭 Europe — 6 banques</div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">EUR</span>
+        <span class="bank-name">BNP Paribas</span>
+        <span class="bank-ticker">Euronext Paris : BNP</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://invest.bnpparibas" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> invest.bnpparibas</a></div>
+        <div class="link-row"><span class="link-type">Résultats (FR)</span><a href="https://invest.bnpparibas/resultats" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Résultats & publications</a></div>
+        <div class="link-row"><span class="link-type">Résultats (EN)</span><a href="https://invest.bnpparibas/en/results" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Results & publications (EN)</a></div>
+        <div class="link-row"><span class="link-type">URD / Rapport annuel</span><a href="https://invest.bnpparibas/document/document-d-enregistrement-universel-et-rapport-financier-annuel-2025-pdf" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> URD 2025 (PDF)</a></div>
+        <div class="link-row"><span class="link-type">Documents financiers</span><a href="https://invest.bnpparibas/recherche/rapports/documents/rapports-financiers-et-sociaux" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Rapports financiers</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">EUR</span>
+        <span class="bank-name">Banco Santander</span>
+        <span class="bank-ticker">BME : SAN</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.santander.com/en/shareholders-and-investors" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> santander.com/shareholders</a></div>
+        <div class="link-row"><span class="link-type">Info financière</span><a href="https://www.santander.com/en/shareholders-and-investors/financial-and-economic-information" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Financial & economic information</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.santander.com/en/shareholders-and-investors/financial-and-economic-information/annual-report" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">EUR</span>
+        <span class="bank-name">Deutsche Bank</span>
+        <span class="bank-ticker">XETRA : DBK</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://investor-relations.db.com" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> investor-relations.db.com</a></div>
+        <div class="link-row"><span class="link-type">Rapports & événements</span><a href="https://investor-relations.db.com/reports-and-events/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Reports and Events</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://investor-relations.db.com/reports-and-events/annual-reports/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports</a></div>
+        <div class="link-row"><span class="link-type">Résultats trim.</span><a href="https://investor-relations.db.com/reports-and-events/quarterly-results" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Quarterly Results</a></div>
+        <div class="link-row"><span class="link-type">Rapport annuel 2025</span><a href="https://investor-relations.db.com/files/documents/other-presentations-and-events/2025/Annual-Report-2025.pdf" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Report 2025 (PDF)</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">GBP</span>
+        <span class="bank-name">Barclays</span>
+        <span class="bank-ticker">LSE : BARC</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://home.barclays/investor-relations/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> home.barclays/investor-relations</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://home.barclays/investor-relations/reports-and-events/annual-reports/" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reports (2021–2025)</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">USD</span>
+        <span class="bank-name">UBS Group</span>
+        <span class="bank-ticker">SIX : UBSG</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://www.ubs.com/global/en/investor-relations.html" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> ubs.com/investor-relations</a></div>
+        <div class="link-row"><span class="link-type">Info financière</span><a href="https://www.ubs.com/global/en/investor-relations/financial-information.html" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Financial Information</a></div>
+        <div class="link-row"><span class="link-type">Rapports annuels</span><a href="https://www.ubs.com/global/en/investor-relations/financial-information/annual-reporting/ar-archive.html" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Reporting Archive</a></div>
+        <div class="link-row"><span class="link-type">Rapport annuel 2025</span><a href="https://www.ubs.com/content/dam/assets/cc/investor-relations/annual-report/2025/annual-report-ubs-ag-2025.pdf" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Annual Report 2025 (PDF)</a></div>
+      </div>
+    </div>
+
+    <div class="bank-card">
+      <div class="bank-header">
+        <span class="bank-tag tag-eu">EUR</span>
+        <span class="bank-name">Société Générale</span>
+        <span class="bank-ticker">Euronext Paris : GLE</span>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">Relations investisseurs</span><a href="https://investors.societegenerale.com/fr" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> investors.societegenerale.com</a></div>
+        <div class="link-row"><span class="link-type">Résultats trimestriels</span><a href="https://investors.societegenerale.com/fr/informations-financieres-et-extra-financieres/resultats-et-publications-financieres/resultats-trimestriels" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Résultats trimestriels</a></div>
+        <div class="link-row"><span class="link-type">Résultats annuels 2025</span><a href="https://investors.societegenerale.com/fr/actionnaires-individuels/lettre-de-lactionnaire/comprendre-nos-resultats-annuels-2025" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Résultats annuels 2025</a></div>
+        <div class="link-row"><span class="link-type">URD 2025 (PDF)</span><a href="https://usprogram.socgen.com/files/297.pdf" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Universal Registration Document 2025</a></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="region-label">💱 Taux de change — sources officielles</div>
+    <div class="fx-box">
+      <div class="fx-title">Taux EUR/USD et GBP/USD</div>
+      <div class="links">
+        <div class="link-row"><span class="link-type">BCE (EUR référence)</span><a href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Euro foreign exchange reference rates — ECB</a></div>
+        <div class="link-row"><span class="link-type">BCE Data Portal</span><a href="https://data.ecb.europa.eu/data/datasets/EXR/EXR.D.USD.EUR.SP00.A" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> EUR/USD historique — ECB Data Portal</a></div>
+        <div class="link-row"><span class="link-type">Bundesbank (PDF)</span><a href="https://www.bundesbank.de/resource/blob/810486/a6f85aac3ac47b07ea32eae66e4bfa82/mL/ii-euro-referenzkurse-der-ezb-data.pdf" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> Moyennes annuelles BCE — Bundesbank</a></div>
+        <div class="link-row"><span class="link-type">Federal Reserve (USD)</span><a href="https://www.federalreserve.gov/releases/h10/hist/default.htm" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i> H.10 Foreign Exchange Rates — Fed</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <b>Comment citer ces sources dans ton rapport :</b><br>
+    Pour chaque donnée, la chaîne de traçabilité est :<br>
+    <em>Rapport annuel officiel (ou communiqué de résultats) → feuille Financials_Raw du classeur Excel → Java ETL → processed_bank_data.csv → Power BI</em><br><br>
+    Exemple de citation : <em>« Résultat net BNP Paribas 2024 : 11 688 M€ — Source : BNP Paribas, Communiqué de résultats annuels 2024, publié le 5 février 2025, invest.bnpparibas/resultats »</em>
+  </div>
+</div>

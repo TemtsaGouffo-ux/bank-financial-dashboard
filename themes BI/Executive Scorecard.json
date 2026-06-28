@@ -1,0 +1,96 @@
+{
+    "name": "Executive Scorecard High Contrast",
+    "dataColors": [
+        "#262626", 
+        "#595959", 
+        "#8C8C8C", 
+        "#BFBFBF", 
+        "#000000", 
+        "#404040", 
+        "#7F7F7F", 
+        "#A6A6A6"
+    ],
+    "background": "#FFFFFF",
+    "foreground": "#000000",
+    "tableAccent": "#000000",
+    "visualStyles": {
+        "*": {
+            "*": {
+                "background": [
+                    {
+                        "show": true,
+                        "color": { "solid": { "color": "#FFFFFF" } },
+                        "transparency": 0
+                    }
+                ],
+                "border": [
+                    {
+                        "show": true,
+                        "color": { "solid": { "color": "#000000" } },
+                        "radius": 10
+                    }
+                ],
+                "title": [
+                    {
+                        "show": true,
+                        "fontFamily": "Segoe UI Bold",
+                        "fontSize": 14,
+                        "color": { "solid": { "color": "#000000" } }
+                    }
+                ]
+            }
+        },
+        "card": {
+            "*": {
+                "labels": [
+                    {
+                        "color": { "solid": { "color": "#262626" } },
+                        "fontSize": 45,
+                        "fontFamily": "Segoe UI Semibold"
+                    }
+                ],
+                "categoryLabels": [
+                    {
+                        "show": true,
+                        "color": { "solid": { "color": "#595959" } },
+                        "fontSize": 11
+                    }
+                ]
+            }
+        },
+        "tableEx": {
+            "*": {
+                "columnHeaders": [
+                    {
+                        "fontColor": { "solid": { "color": "#FFFFFF" } },
+                        "backColor": { "solid": { "color": "#000000" } },
+                        "fontFamily": "Segoe UI Bold"
+                    }
+                ],
+                "grid": [
+                    {
+                        "outlineColor": { "solid": { "color": "#000000" } },
+                        "gridVertical": true,
+                        "gridHorizontal": true
+                    }
+                ]
+            }
+        },
+        "lineChart": {
+            "*": {
+                "labels": [
+                    {
+                        "show": true,
+                        "color": { "solid": { "color": "#000000" } }
+                    }
+                ],
+                "categoryAxis": [
+                    {
+                        "show": true,
+                        "labelColor": { "solid": { "color": "#000000" } }
+                    }
+                ]
+            }
+        }
+    }
+}

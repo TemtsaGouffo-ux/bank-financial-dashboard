@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Santé Financière des Banques — Tableau de Bord d'Aperçu</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --americas: #2563eb;
+    --europe: #d97706;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  p.sub { color: var(--muted); margin-top: 0; margin-bottom: 24px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .card h2 { font-size: 1rem; margin: 0 0 12px 0; color: var(--text); }
+  .card.full { grid-column: 1 / -1; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #334155; }
+  th { color: var(--muted); font-weight: 600; }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem;
+  }
+  .pill.Americas { background: rgba(37,99,235,0.2); color: #93c5fd; }
+  .pill.Europe { background: rgba(217,119,6,0.2); color: #fcd34d; }
+  #loadError { color: #f87171; display:none; }
+</style>
+</head>
+<body>
+  <h1>Santé Financière des Banques — Tableau de Bord d'Aperçu</h1>
+  <p class="sub">Vérification visuelle rapide de <code>processed_bank_data.csv</code> avant de construire le rapport Power BI. Lance d'abord les scripts Java + Node pour (re)générer <code>summary_stats.json</code>.</p>
+  <p id="loadError">Impossible de charger data/summary_stats.json. Lance d'abord le script Node.js, puis rouvre cette page (la servir via un serveur local, ex. <code>npx serve</code>, évite les restrictions du navigateur sur les fichiers file://).</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Résultat Net par Banque — Dernière Année (USD, millions)</h2>
+      <canvas id="netIncomeChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>ROE vs Ratio CET1 — Dernière Année</h2>
+      <canvas id="scatterChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Évolution du Score de Santé Financière (2021–dernière année)</h2>
+      <canvas id="trendChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Europe vs Amériques — Chiffre d'Affaires Combiné, Dernière Année</h2>
+      <canvas id="regionChart"></canvas>
+    </div>
+    <div class="card full">
+      <h2>Anomalies de Qualité des Données (détectées par validate_and_summarize.js)</h2>
+      <table id="outlierTable">
+        <thead><tr><th>Banque</th><th>Année</th><th>Métrique</th><th>Valeur</th><th>Z-score</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+fetch('../data/summary_stats.json')
+  .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+  .then(render)
+  .catch(() => { document.getElementById('loadError').style.display = 'block'; });
+
+function colorFor(region) { return region === 'Americas' ? '#2563eb' : '#d97706'; }
+
+// Traduction des libellés affichés (les données brutes restent en anglais : 'Americas'/'Europe')
+const REGION_FR = { Americas: 'Amériques', Europe: 'Europe' };
+const METRIC_FR = {
+  NetIncome_USD_M: 'Résultat net (M$)',
+  ROE_Pct: 'ROE (%)',
+  FinancialHealthScore: 'Score de santé financière'
+};
+
+function render(data) {
+  const latest = data.latestYear;
+  const latestRows = data.series.filter(r => r.year === latest).sort((a,b) => b.netIncome - a.netIncome);
+
+  // Graphique résultat net
+  new Chart(document.getElementById('netIncomeChart'), {
+    type: 'bar',
+    data: {
+      labels: latestRows.map(r => r.bank),
+      datasets: [{
+        label: 'Résultat net (M$)',
+        data: latestRows.map(r => r.netIncome),
+        backgroundColor: latestRows.map(r => colorFor(r.region))
+      }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+  });
+
+  // Nuage de points ROE vs CET1
+  new Chart(document.getElementById('scatterChart'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        { label: REGION_FR.Americas, backgroundColor: colorFor('Americas'),
+          data: latestRows.filter(r => r.region === 'Americas').map(r => ({x: r.cet1, y: r.roe, label: r.bank})) },
+        { label: REGION_FR.Europe, backgroundColor: colorFor('Europe'),
+          data: latestRows.filter(r => r.region === 'Europe').map(r => ({x: r.cet1, y: r.roe, label: r.bank})) }
+      ]
+    },
+    options: {
+      scales: {
+        x: { title: { display: true, text: 'Ratio CET1 (%)' } },
+        y: { title: { display: true, text: 'ROE (%)' } }
+      },
+      plugins: {
+        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.label} : ROE ${ctx.raw.y}%, CET1 ${ctx.raw.x}%` } }
+      }
+    }
+  });
+
+  // Tendance du score de santé financière par banque
+  const banksList = data.banks;
+  const yearsList = data.years;
+  const trendDatasets = banksList.map(b => {
+    const region = data.series.find(r => r.bankId === b.id)?.region;
+    return {
+      label: b.name,
+      data: yearsList.map(y => {
+        const row = data.series.find(r => r.bankId === b.id && r.year === y);
+        return row ? row.healthScore : null;
+      }),
+      borderColor: colorFor(region),
+      backgroundColor: 'transparent',
+      borderWidth: region === 'Americas' ? 2 : 1.5,
+      borderDash: region === 'Europe' ? [4,2] : [],
+      pointRadius: 2
+    };
+  });
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: { labels: yearsList, datasets: trendDatasets },
+    options: { plugins: { legend: { labels: { boxWidth: 12, font: { size: 9 } } } } }
+  });
+
+  // Camembert des totaux par région
+  const regionTotals = data.regionTotalsLatestYear;
+  new Chart(document.getElementById('regionChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(regionTotals).map(k => REGION_FR[k] || k),
+      datasets: [{
+        data: Object.values(regionTotals).map(v => v.revenue),
+        backgroundColor: Object.keys(regionTotals).map(colorFor)
+      }]
+    }
+  });
+
+  // Tableau des anomalies
+  const tbody = document.querySelector('#outlierTable tbody');
+  if (data.outliers.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Aucune anomalie statistique détectée.</td></tr>';
+  } else {
+    tbody.innerHTML = data.outliers.map(o =>
+      `<tr><td>${o.bank}</td><td>${o.year}</td><td>${METRIC_FR[o.metric] || o.metric}</td><td>${o.value}</td><td>${o.zScore}</td></tr>`
+    ).join('');
+  }
+}
+</script>
+</body>
+</html>

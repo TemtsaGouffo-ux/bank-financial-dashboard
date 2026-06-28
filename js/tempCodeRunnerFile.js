@@ -1,0 +1,1 @@
+This file also powers js/preview_dashboard.html — open that file in a browser to see a quick visual check before building the Power BI dashboard.

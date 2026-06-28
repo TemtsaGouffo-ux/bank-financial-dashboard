@@ -1,0 +1,24 @@
+{
+    "RealTimeDashboard": {
+        "title": "Real-Time Weather Dashboard",
+        "description_short": "Built using Power BI & OpenWeather API, published on Microsoft Fabric. Tracks live temperature, humidity, and wind across cities to support smarter decisions in travel and logistics.",
+        "tools": [
+            "Power BI",
+            "Power Query",
+            "API Integration",
+            "Microsoft Fabric"
+        ],
+        "use_case": "Real-time monitoring for operational planning",
+        "user_friendly_explanation": {
+            "what_it_does": "Shows the latest weather conditions like temperature, humidity, and wind speed in different cities.",
+            "why_useful": "Helps professionals in travel, logistics, or events make fast, data-driven decisions.",
+            "how_it_works": "Uses Power BI with Power Query to fetch live data from OpenWeather API and displays it with interactive visuals.",
+            "summary": "This dashboard gives you real-time weather updates in one place\u2014fast, reliable, and visual."
+        },
+        "contact": {
+            "message": "Have a question or want to discuss the project/story in detail? Feel free to connect with me!",
+            "email": "sudeshnadey1000@gmail.com",
+            "linkedin": "https://www.linkedin.com/in/sudeshna-dey-724a811a0"
+        }
+    }
+}
