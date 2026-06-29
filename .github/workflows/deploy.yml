@@ -1,4 +1,4 @@
-name: 🚀 Build & Deploy Dashboard → GitHub Pages
+name: Deploy Dashboard
 
 on:
   push:
@@ -15,50 +15,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: ☕ Java 21
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
 
-	- name: ⚙️ Compilation + ETL Java
-          run: |
-          cd java
-          javac BankFinancialAnalyzer.java
-          java BankFinancialAnalyzer
+      - name: Compilation Java
+        run: cd java && javac BankFinancialAnalyzer.java
 
-      - name: 🟢 Node.js 20
-        uses: actions/setup-node@v4
+      - name: ETL Java
+        run: cd java && java BankFinancialAnalyzer
+
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: 🔍 Validation données
+      - name: Validation Node
         run: node js/validate_and_summarize.js
 
-      - name: 📁 Préparation GitHub Pages
+      - name: Preparation site
         run: |
           mkdir -p _site/data
           cp dashboard/index.html _site/index.html
           cp data/summary_stats.json _site/data/summary_stats.json
 
-      - name: 📤 Upload artefact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
   deploy:
-    needs: build-and-deploy
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - name: 🌐 Déploiement
+      - name: Deploy
         id: deploy
         uses: actions/deploy-pages@v4
