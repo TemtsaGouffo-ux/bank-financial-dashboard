@@ -27,11 +27,11 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: ⚙️ Compilation Java
-        run: javac java/BankFinancialAnalyzer.java
-
-      - name: 🔄 ETL Java
-        run: java -cp java BankFinancialAnalyzer
+	- name: ⚙️ Compilation + ETL Java
+          run: |
+          cd java
+          javac BankFinancialAnalyzer.java
+          java BankFinancialAnalyzer
 
       - name: 🟢 Node.js 20
         uses: actions/setup-node@v4

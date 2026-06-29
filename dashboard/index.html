@@ -1,64 +1,632 @@
-name: 🚀 Build & Deploy Dashboard → GitHub Pages
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Santé Financière Bancaire — 2021–2025</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+/* ── Navigation ── */
+nav{background:#1e293b;border-bottom:1px solid #334155;display:flex;align-items:center;padding:0 24px;flex-wrap:wrap;gap:4px}
+.nav-brand{font-weight:700;font-size:15px;padding:14px 0;margin-right:24px;white-space:nowrap;color:#f1f5f9}
+.nav-tab{padding:14px 16px;font-size:13px;cursor:pointer;color:#94a3b8;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
+.nav-tab:hover{color:#cbd5e1}
+.nav-tab.active{color:#e2e8f0;border-bottom-color:#3b82f6}
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+/* ── Sélecteur d'année ── */
+.year-bar{background:#162032;border-bottom:1px solid #253347;padding:8px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.year-label{font-size:12px;color:#64748b;margin-right:4px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.year-btn{padding:5px 14px;border:1px solid #334155;background:transparent;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
+.year-btn.active{background:#3b82f6;border-color:#3b82f6;color:#fff;font-weight:500}
+.year-btn:hover:not(.active){border-color:#475569;color:#e2e8f0}
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
+/* ── Pages ── */
+.page{display:none;padding:20px 24px 40px}
+.page.active{display:block}
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
+/* ── KPI row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 18px}
+.kpi-lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:500}
+.kpi-val{font-size:24px;font-weight:600;color:#f1f5f9;line-height:1.1}
+.kpi-sub{font-size:11px;color:#475569;margin-top:4px}
 
-      - name: ☕ Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "21"
+/* ── Chart grids ── */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.row-map{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}
+.row-full{margin-bottom:16px}
+.card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px}
+.card-title{font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
 
-      - name: ⚙️ Compilation Java
-        run: javac java/BankFinancialAnalyzer.java
+/* ── Map ── */
+#map{height:300px;border-radius:8px;z-index:0}
+.leaflet-popup-content-wrapper{background:#1e293b;border:1px solid #334155;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5);color:#e2e8f0}
+.leaflet-popup-tip{background:#1e293b}
+.leaflet-popup-content{font-size:13px;line-height:1.6;margin:10px 14px}
+.leaflet-popup-content b{color:#f1f5f9}
+.leaflet-popup-close-button{color:#94a3b8!important}
 
-      - name: 🔄 ETL Java
-        run: java -cp java BankFinancialAnalyzer
+/* ── Legend pill ── */
+.legend-row{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8}
+.legend-dot{width:10px;height:10px;border-radius:50%}
 
-      - name: 🟢 Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+/* ── Outlier table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{padding:8px 10px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #334155}
+.tbl td{padding:8px 10px;border-bottom:1px solid #253347;color:#cbd5e1}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#253347}
+.z-high{color:#f87171;font-weight:600}
+.z-mid{color:#fbbf24;font-weight:600}
 
-      - name: 🔍 Validation données
-        run: node js/validate_and_summarize.js
+/* ── Deep dive ── */
+.bank-sel-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.bank-sel-row label{font-size:13px;color:#64748b;font-weight:500}
+select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer;min-width:200px}
+select:focus{outline:none;border-color:#3b82f6}
 
-      - name: 📁 Préparation GitHub Pages
-        run: |
-          mkdir -p _site/data
-          cp dashboard/index.html _site/index.html
-          cp data/summary_stats.json _site/data/summary_stats.json
+/* ── Score gauge wrapper ── */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;position:relative;padding:8px 0}
+.gauge-canvas-wrap{position:relative;width:200px;height:200px;margin:0 auto}
+.gauge-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;font-weight:700;color:#f1f5f9;text-align:center;pointer-events:none}
+.gauge-denom{font-size:14px;color:#64748b;margin-top:-4px}
+.gauge-sub{font-size:12px;color:#64748b;margin-top:12px;text-align:center;line-height:1.5}
 
-      - name: 📤 Upload artefact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
+/* ── Data table ── */
+.tbl-wrap{overflow-x:auto}
+.data-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.data-tbl th{padding:8px 10px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #334155}
+.data-tbl th:first-child{text-align:left}
+.data-tbl td{padding:8px 10px;border-bottom:1px solid #253347;color:#cbd5e1;text-align:right}
+.data-tbl td:first-child{text-align:left;font-weight:500;color:#f1f5f9}
+.data-tbl tr.highlight td{background:#1e3a5f;color:#f1f5f9}
+.data-tbl tr:hover td{background:#253347}
 
-  deploy:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - name: 🌐 Déploiement
-        id: deploy
-        uses: actions/deploy-pages@v4
+/* ── Error / loading ── */
+.error-box{background:#2d1b1b;border:1px solid #7f1d1d;border-radius:10px;padding:20px 24px;color:#f87171;font-size:14px;line-height:1.7;margin:24px 0}
+.error-box code{background:#450a0a;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
+
+@media(max-width:768px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .row-2,.row-map{grid-template-columns:1fr}
+  nav{padding:0 12px}
+  .page{padding:14px 12px 32px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ───────────────────────────────────── -->
+<nav>
+  <span class="nav-brand">🏦 Santé Financière Bancaire</span>
+  <div class="nav-tab active"  onclick="showPage('overview',this)">Vue d'ensemble</div>
+  <div class="nav-tab"         onclick="showPage('region',this)">Comparaison régions</div>
+  <div class="nav-tab"         onclick="showPage('bank',this)">Analyse par banque</div>
+</nav>
+
+<!-- ── SÉLECTEUR D'ANNÉE ────────────────────────────── -->
+<div class="year-bar">
+  <span class="year-label">Année :</span>
+  <button class="year-btn"        onclick="setYear(2021,this)">2021</button>
+  <button class="year-btn"        onclick="setYear(2022,this)">2022</button>
+  <button class="year-btn"        onclick="setYear(2023,this)">2023</button>
+  <button class="year-btn"        onclick="setYear(2024,this)">2024</button>
+  <button class="year-btn active" onclick="setYear(2025,this)">2025</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 1 — VUE D'ENSEMBLE
+     ══════════════════════════════════════════════════ -->
+<div id="page-overview" class="page active">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-lbl">Revenus cumulés</div>
+      <div class="kpi-val" id="kpi-rev">—</div>
+      <div class="kpi-sub">Milliards USD</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Résultat net cumulé</div>
+      <div class="kpi-val" id="kpi-ni">—</div>
+      <div class="kpi-sub">Milliards USD</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">ROE moyen</div>
+      <div class="kpi-val" id="kpi-roe">—</div>
+      <div class="kpi-sub">% — toutes banques</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Score santé moyen</div>
+      <div class="kpi-val" id="kpi-score">—</div>
+      <div class="kpi-sub">/ 100 (composite)</div>
+    </div>
+  </div>
+
+  <!-- Carte + classement résultat net -->
+  <div class="row-map">
+    <div class="card">
+      <div class="card-title">🗺️ Localisation des sièges sociaux — taille bulle = résultat net</div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Amériques</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Europe</div>
+      </div>
+      <div id="map"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Résultat net par banque (USD M)</div>
+      <canvas id="ch-ni-bar" style="max-height:320px"></canvas>
+    </div>
+  </div>
+
+  <!-- Score santé + anomalies -->
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">🏆 Classement — Score de santé financière (0–100)</div>
+      <canvas id="ch-score-bar" style="max-height:300px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ Anomalies statistiques détectées (z-score &gt; 2)</div>
+      <div class="tbl-wrap">
+        <table class="tbl" id="tbl-outliers">
+          <thead><tr><th>Banque</th><th>Métrique</th><th>Valeur</th><th>Z-score</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 2 — COMPARAISON RÉGIONS
+     ══════════════════════════════════════════════════ -->
+<div id="page-region" class="page">
+
+  <div class="row-full">
+    <div class="card">
+      <div class="card-title">📈 Évolution du résultat net cumulé — Europe vs Amériques (2021–2025)</div>
+      <canvas id="ch-trend" style="max-height:240px"></canvas>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">⚡ Rentabilité vs Solidité — ROE (%) / CET1 (%)</div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Amériques</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Europe</div>
+      </div>
+      <canvas id="ch-scatter" style="max-height:280px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 ROE moyen par région — année sélectionnée</div>
+      <canvas id="ch-roe-region" style="max-height:280px"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 3 — ANALYSE PAR BANQUE
+     ══════════════════════════════════════════════════ -->
+<div id="page-bank" class="page">
+
+  <div class="bank-sel-row">
+    <label>Sélectionner une banque :</label>
+    <select id="bank-sel" onchange="updateBankPage()"></select>
+  </div>
+
+  <div class="row-2" style="align-items:stretch">
+    <div class="card">
+      <div class="card-title">📈 Revenus & Résultat net sur 5 ans (USD M)</div>
+      <canvas id="ch-bank-trend" style="max-height:260px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Score de santé financière — année sélectionnée</div>
+      <div class="gauge-wrap">
+        <div class="gauge-canvas-wrap">
+          <canvas id="ch-bank-gauge"></canvas>
+          <div class="gauge-number" id="gauge-num">—</div>
+        </div>
+        <div class="gauge-sub" id="gauge-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗂️ Données détaillées (2021–2025) — ligne en surbrillance = année sélectionnée</div>
+    <div class="tbl-wrap">
+      <table class="data-tbl">
+        <thead>
+          <tr>
+            <th>Année</th>
+            <th>Revenus (M$)</th>
+            <th>Résultat net (M$)</th>
+            <th>ROE %</th>
+            <th>CET1 %</th>
+            <th>Marge %</th>
+            <th>Croiss. NI</th>
+            <th>Score santé</th>
+          </tr>
+        </thead>
+        <tbody id="bank-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════ -->
+<script>
+/* ── Globals ──────────────────────────────────────── */
+let DATA = null;
+let currentYear = 2025;
+const charts = {};
+let leafletMap = null;
+let mapMarkers = [];
+
+const RC = { Americas: '#3b82f6', Europe: '#d97706' };
+const RF = { Americas: 'Amériques', Europe: 'Europe' };
+const MF = {
+  NetIncome_USD_M:      'Résultat net (M$)',
+  ROE_Pct:              'ROE (%)',
+  FinancialHealthScore: 'Score santé'
+};
+
+/* ── Formatters ───────────────────────────────────── */
+const fmtN = n => n == null ? '—' : Math.round(n).toLocaleString('fr');
+const fmtB = n => n == null ? '—' : (n / 1000).toFixed(0) + ' Mds$';
+const fmtP = n => n == null ? '—' : n.toFixed(1) + '%';
+const fmtS = n => n == null ? '—' : n.toFixed(1);
+
+/* ── Data loading ─────────────────────────────────── */
+async function loadData() {
+  const candidates = ['./data/summary_stats.json', '../data/summary_stats.json'];
+  for (const p of candidates) {
+    try {
+      const r = await fetch(p);
+      if (r.ok) return r.json();
+    } catch (_) { /* essaie le suivant */ }
+  }
+  return null;
+}
+
+/* ── Helpers ──────────────────────────────────────── */
+function byYear(year) {
+  return DATA.series.filter(r => r.year === year);
+}
+
+function makeChart(id, cfg) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id).getContext('2d'), cfg);
+  return charts[id];
+}
+
+const GRID_COLOR  = '#1e293b';
+const TICK_COLOR  = '#64748b';
+const LABEL_COLOR = '#94a3b8';
+
+/* ── Leaflet map ──────────────────────────────────── */
+function initMap() {
+  leafletMap = L.map('map', { scrollWheelZoom: false, zoomControl: true })
+    .setView([40, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 10
+  }).addTo(leafletMap);
+}
+
+function refreshMap(yearData) {
+  mapMarkers.forEach(m => leafletMap.removeLayer(m));
+  mapMarkers = [];
+  const maxNI = Math.max(...yearData.map(r => r.netIncome).filter(v => v > 0));
+  yearData.forEach(r => {
+    const rad = Math.max(8, (Math.max(0, r.netIncome) / maxNI) * 38);
+    const m = L.circleMarker([r.lat, r.lon], {
+      radius: rad,
+      fillColor: RC[r.region],
+      color: '#0f172a',
+      weight: 2,
+      fillOpacity: 0.78
+    }).addTo(leafletMap);
+    m.bindPopup(`
+      <b>${r.bank}</b><br>
+      ${RF[r.region]}<br>
+      <b>Résultat net :</b> ${fmtN(r.netIncome)} M$<br>
+      <b>ROE :</b> ${fmtP(r.roe)} &nbsp;|&nbsp; <b>CET1 :</b> ${fmtP(r.cet1)}<br>
+      <b>Score santé :</b> ${fmtS(r.healthScore)} / 100
+    `);
+    mapMarkers.push(m);
+  });
+}
+
+/* ── Page 1 charts ────────────────────────────────── */
+function refreshKPIs(yd) {
+  const totRev   = yd.reduce((s, r) => s + (r.revenue   || 0), 0);
+  const totNI    = yd.reduce((s, r) => s + (r.netIncome || 0), 0);
+  const avgROE   = yd.reduce((s, r) => s + (r.roe       || 0), 0) / yd.length;
+  const avgScore = yd.reduce((s, r) => s + (r.healthScore || 0), 0) / yd.length;
+  document.getElementById('kpi-rev').textContent   = fmtB(totRev);
+  document.getElementById('kpi-ni').textContent    = fmtB(totNI);
+  document.getElementById('kpi-roe').textContent   = fmtP(avgROE);
+  document.getElementById('kpi-score').textContent = avgScore.toFixed(1);
+}
+
+function refreshNIBar(yd) {
+  const sorted = [...yd].sort((a, b) => b.netIncome - a.netIncome);
+  makeChart('ch-ni-bar', {
+    type: 'bar',
+    data: {
+      labels: sorted.map(r => r.bank.replace('JPMorgan Chase','JPMorgan').replace('Bank of America','BofA').replace('Goldman Sachs','Goldman')),
+      datasets: [{ data: sorted.map(r => r.netIncome), backgroundColor: sorted.map(r => RC[r.region] + 'cc'), borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + fmtN(c.raw) + ' M$' } } },
+      scales: {
+        x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
+        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function refreshScoreBar(yd) {
+  const sorted = [...yd].sort((a, b) => (b.healthScore||0) - (a.healthScore||0));
+  const bg = sorted.map((_, i) => ['#f59e0b','#94a3b8','#a16207','#334155','#334155','#334155','#334155','#334155','#334155','#334155','#334155'][i]);
+  makeChart('ch-score-bar', {
+    type: 'bar',
+    data: {
+      labels: sorted.map(r => r.bank.replace('JPMorgan Chase','JPMorgan').replace('Bank of America','BofA').replace('Goldman Sachs','Goldman')),
+      datasets: [{ data: sorted.map(r => +(r.healthScore||0).toFixed(1)), backgroundColor: bg, borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' Score : ' + c.raw + ' / 100' } } },
+      scales: {
+        x: { min: 0, max: 100, ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
+        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function refreshOutlierTable(year) {
+  const tbody = document.querySelector('#tbl-outliers tbody');
+  const outs = (DATA.outliers || []).filter(o => o.year === year);
+  if (!outs.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:#475569;padding:14px 10px;text-align:center">Aucune anomalie statistique pour cette année</td></tr>';
+    return;
+  }
+  tbody.innerHTML = outs.map(o => {
+    const zClass = Math.abs(o.zScore) > 3 ? 'z-high' : 'z-mid';
+    return `<tr><td>${o.bank}</td><td>${MF[o.metric]||o.metric}</td><td>${fmtN(o.value)}</td><td class="${zClass}">${o.zScore}</td></tr>`;
+  }).join('');
+}
+
+/* ── Page 2 charts ────────────────────────────────── */
+function refreshTrendChart() {
+  const years = DATA.years;
+  const datasets = Object.keys(RC).map(reg => ({
+    label: RF[reg],
+    data: years.map(y => DATA.series.filter(r => r.year === y && r.region === reg).reduce((s, r) => s + r.netIncome, 0)),
+    borderColor: RC[reg],
+    backgroundColor: RC[reg] + '18',
+    fill: true,
+    tension: 0.35,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    borderWidth: 2.5
+  }));
+  makeChart('ch-trend', {
+    type: 'line',
+    data: { labels: years, datasets },
+    options: {
+      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true } } },
+      scales: {
+        x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
+        y: { ticks: { color: TICK_COLOR, callback: v => fmtB(v) }, grid: { color: GRID_COLOR } }
+      }
+    }
+  });
+}
+
+function refreshScatter(yd) {
+  const datasets = Object.keys(RC).map(reg => ({
+    label: RF[reg],
+    backgroundColor: RC[reg] + 'cc',
+    pointRadius: 9, pointHoverRadius: 12,
+    data: yd.filter(r => r.region === reg).map(r => ({ x: r.cet1, y: r.roe, bank: r.bank }))
+  }));
+  makeChart('ch-scatter', {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      plugins: {
+        legend: { labels: { color: LABEL_COLOR, usePointStyle: true } },
+        tooltip: { callbacks: { label: c => `${c.raw.bank} : ROE ${c.raw.y}%  CET1 ${c.raw.x}%` } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Ratio CET1 (%)', color: TICK_COLOR }, ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
+        y: { title: { display: true, text: 'ROE (%)', color: TICK_COLOR }, ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } }
+      }
+    }
+  });
+}
+
+function refreshROERegion(yd) {
+  const regs = Object.keys(RC);
+  const avgs = regs.map(reg => {
+    const rows = yd.filter(r => r.region === reg);
+    return +(rows.reduce((s, r) => s + r.roe, 0) / rows.length).toFixed(2);
+  });
+  makeChart('ch-roe-region', {
+    type: 'bar',
+    data: {
+      labels: regs.map(r => RF[r]),
+      datasets: [{ label: 'ROE moyen (%)', data: avgs, backgroundColor: regs.map(r => RC[r] + 'cc'), borderRadius: 8, borderSkipped: false }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ROE : ' + c.raw + '%' } } },
+      scales: {
+        x: { ticks: { color: LABEL_COLOR } },
+        y: { ticks: { color: TICK_COLOR, callback: v => v + '%' }, grid: { color: GRID_COLOR } }
+      }
+    }
+  });
+}
+
+/* ── Page 3 : Bank deep dive ──────────────────────── */
+function populateBankSelect() {
+  const sel = document.getElementById('bank-sel');
+  sel.innerHTML = DATA.banks.map((b, i) => `<option value="${i}">${b.name}</option>`).join('');
+}
+
+function updateBankPage() {
+  if (!DATA) return;
+  const idx  = parseInt(document.getElementById('bank-sel').value);
+  const bank = DATA.banks[idx];
+  const series = DATA.series
+    .filter(r => r.bank === bank.name)
+    .sort((a, b) => a.year - b.year);
+
+  const yearRow  = series.find(r => r.year === currentYear) || series[series.length - 1];
+  const allYD    = byYear(currentYear);
+  const avgScore = allYD.reduce((s, r) => s + (r.healthScore || 0), 0) / allYD.length;
+  const bankScore = yearRow?.healthScore || 0;
+
+  /* Trend chart */
+  makeChart('ch-bank-trend', {
+    type: 'line',
+    data: {
+      labels: series.map(r => r.year),
+      datasets: [
+        { label: 'Revenus (M$)',     data: series.map(r => r.revenue),   borderColor: '#3b82f6', backgroundColor: '#3b82f610', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 2.5 },
+        { label: 'Résultat net (M$)',data: series.map(r => r.netIncome), borderColor: '#d97706', backgroundColor: '#d9770610', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 2.5 }
+      ]
+    },
+    options: {
+      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true } } },
+      scales: {
+        x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
+        y: { ticks: { color: TICK_COLOR, callback: v => fmtN(v) }, grid: { color: GRID_COLOR } }
+      }
+    }
+  });
+
+  /* Gauge */
+  if (charts['ch-bank-gauge']) charts['ch-bank-gauge'].destroy();
+  const gaugeColor = bankScore >= avgScore ? '#22c55e' : '#f59e0b';
+  charts['ch-bank-gauge'] = new Chart(
+    document.getElementById('ch-bank-gauge').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [bankScore, 100 - bankScore],
+          backgroundColor: [gaugeColor, '#1e3a5f'],
+          borderWidth: 0
+        }]
+      },
+      options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+    }
+  );
+  document.getElementById('gauge-num').textContent = bankScore.toFixed(1);
+  document.getElementById('gauge-sub').innerHTML =
+    `Moyenne groupe (${currentYear}) : <b>${avgScore.toFixed(1)}</b> / 100<br>` +
+    (bankScore >= avgScore
+      ? `<span style="color:#22c55e">✅ Au-dessus de la moyenne</span>`
+      : `<span style="color:#f59e0b">⚠️ En-dessous de la moyenne</span>`);
+
+  /* Data table */
+  const prevNI = {};
+  series.forEach((r, i) => { if (i > 0) prevNI[r.year] = series[i - 1].netIncome; });
+
+  document.getElementById('bank-tbody').innerHTML = series.map(r => {
+    const hi   = r.year === currentYear ? ' highlight' : '';
+    const star = r.year === currentYear ? ' ★' : '';
+    const growthVal = prevNI[r.year] != null
+      ? ((r.netIncome - prevNI[r.year]) / prevNI[r.year] * 100)
+      : null;
+    const growthStr = growthVal == null ? '—'
+      : `<span style="color:${growthVal>=0?'#22c55e':'#f87171'}">${growthVal>=0?'+':''}${growthVal.toFixed(1)}%</span>`;
+    return `<tr class="${hi}">
+      <td>${r.year}${star}</td>
+      <td>${fmtN(r.revenue)}</td>
+      <td>${fmtN(r.netIncome)}</td>
+      <td>${fmtP(r.roe)}</td>
+      <td>${fmtP(r.cet1)}</td>
+      <td>${r.netMargin != null ? r.netMargin.toFixed(1)+'%' : '—'}</td>
+      <td>${growthStr}</td>
+      <td>${r.healthScore != null ? r.healthScore.toFixed(1) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Master refresh ───────────────────────────────── */
+function refreshAll() {
+  const yd = byYear(currentYear);
+  refreshKPIs(yd);
+  refreshMap(yd);
+  refreshNIBar(yd);
+  refreshScoreBar(yd);
+  refreshOutlierTable(currentYear);
+  /* Region page — always kept in sync so switching is instant */
+  refreshScatter(yd);
+  refreshROERegion(yd);
+  /* Bank page only if visible */
+  if (document.getElementById('page-bank').classList.contains('active')) {
+    updateBankPage();
+  }
+}
+
+/* ── Year selector ────────────────────────────────── */
+function setYear(year, btn) {
+  currentYear = year;
+  document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  refreshAll();
+}
+
+/* ── Tab navigation ───────────────────────────────── */
+function showPage(id, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  tab.classList.add('active');
+  /* Fix Leaflet rendering when the map was hidden */
+  if (id === 'overview' && leafletMap) setTimeout(() => leafletMap.invalidateSize(), 80);
+  if (id === 'bank') updateBankPage();
+}
+
+/* ── Init ─────────────────────────────────────────── */
+(async () => {
+  DATA = await loadData();
+  if (!DATA) {
+    const err = `<div class="error-box">
+      <b>⚠️ Impossible de charger les données.</b><br><br>
+      Assure-toi d'avoir exécuté le pipeline avant d'ouvrir ce fichier :<br><br>
+      <code>1. cd java && javac BankFinancialAnalyzer.java && java BankFinancialAnalyzer</code><br>
+      <code>2. node js/validate_and_summarize.js</code><br><br>
+      Ensuite, sers le projet via <code>npx serve .</code> et ouvre<br>
+      <code>http://localhost:3000/dashboard/</code>
+    </div>`;
+    document.querySelectorAll('.page').forEach(p => p.insertAdjacentHTML('afterbegin', err));
+    return;
+  }
+  initMap();
+  populateBankSelect();
+  refreshTrendChart();
+  refreshAll();
+})();
+</script>
+</body>
+</html>
