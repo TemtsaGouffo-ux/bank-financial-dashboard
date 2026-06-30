@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Power BI — Santé Financière Bancaire</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f172a; font-family: Segoe UI, sans-serif; color: #e2e8f0; }
+
+  header {
+    background: #1e293b; border-bottom: 1px solid #334155;
+    padding: 12px 24px; display: flex; align-items: center; gap: 12px;
+  }
+  header h1 { font-size: 15px; font-weight: 600; flex: 1; }
+  .btn {
+    padding: 7px 16px; border-radius: 7px; font-size: 13px;
+    font-weight: 500; cursor: pointer; text-decoration: none;
+    border: 1px solid #334155; background: transparent;
+    color: #94a3b8; transition: all .15s;
+  }
+  .btn:hover { border-color: #3b82f6; color: #3b82f6; }
+  .btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  .btn-primary:hover { background: #2563eb; }
+
+  .toolbar {
+    background: #162032; border-bottom: 1px solid #253347;
+    padding: 8px 24px; display: flex; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .page-info { font-size: 13px; color: #64748b; }
+  .page-info span { color: #e2e8f0; font-weight: 600; }
+
+  .viewer { display: flex; flex-direction: column; align-items: center;
+            padding: 24px; gap: 20px; min-height: calc(100vh - 110px); }
+
+  canvas {
+    max-width: 100%; border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.6);
+    background: white;
+  }
+
+  .loading {
+    color: #64748b; font-size: 14px; padding: 60px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid #334155;
+    border-top-color: #3b82f6; border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <span>📊</span>
+  <h1>Dashboard Power BI — Santé Financière Bancaire 2021–2025</h1>
+  <a href="index.html" class="btn">← Dashboard interactif</a>
+  <a href="dashboard_powerbi.pdf" download class="btn btn-primary">⬇ Télécharger PDF</a>
+</header>
+
+<div class="toolbar">
+  <button class="btn" onclick="prevPage()">◀ Précédent</button>
+  <button class="btn" onclick="nextPage()">Suivant ▶</button>
+  <span class="page-info">Page <span id="cur">—</span> / <span id="tot">—</span></span>
+  <button class="btn" onclick="zoom(-0.2)">－ Zoom</button>
+  <button class="btn" onclick="zoom(+0.2)">＋ Zoom</button>
+  <span class="page-info">Zoom : <span id="zoomLbl">100%</span></span>
+</div>
+
+<div class="viewer" id="viewer">
+  <div class="loading">
+    <div class="spinner"></div>
+    Chargement du rapport Power BI…
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let pdfDoc = null;
+let currentPage = 1;
+let scale = 1.4;
+const viewer = document.getElementById('viewer');
+
+pdfjsLib.getDocument('./dashboard_powerbi.pdf').promise.then(pdf => {
+  pdfDoc = pdf;
+  document.getElementById('tot').textContent = pdf.numPages;
+  renderPage(1);
+}).catch(() => {
+  viewer.innerHTML = `
+    <div class="loading" style="color:#f87171">
+      <div style="font-size:32px">⚠️</div>
+      <b>Fichier PDF introuvable</b><br>
+      <span style="font-size:12px;color:#64748b">
+        Place <code>dashboard_powerbi.pdf</code> dans le dossier <code>dashboard/</code><br>
+        puis relance : <code>git add dashboard/ && git commit -m "Ajout PDF" && git push</code>
+      </span>
+    </div>`;
+});
+
+function renderPage(num) {
+  pdfDoc.getPage(num).then(page => {
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width  = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    viewer.innerHTML = '';
+    viewer.appendChild(canvas);
+    page.render({ canvasContext: ctx, viewport });
+    currentPage = num;
+    document.getElementById('cur').textContent = num;
+    document.getElementById('zoomLbl').textContent = Math.round(scale * 100) + '%';
+  });
+}
+
+function prevPage() { if (currentPage > 1) renderPage(currentPage - 1); }
+function nextPage() { if (currentPage < pdfDoc?.numPages) renderPage(currentPage + 1); }
+function zoom(delta) { scale = Math.max(0.5, Math.min(3, scale + delta)); renderPage(currentPage); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextPage();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevPage();
+});
+</script>
+</body>
+</html>
