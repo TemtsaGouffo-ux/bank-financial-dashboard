@@ -3,121 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Santé Financière Bancaire — 2021–2025</title>
+<title>Sante Financiere Bancaire — 2021-2025</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
+/* ============================================================
+   Theme tokens — derived from "Transatlantic (Red & Blue)"
+   Power BI report theme
+   ============================================================ */
+:root{
+  --bg:           #F4F6F5;
+  --fg:           #1E293B;
+  --card-bg:      #FFFFFF;
+  --border:       #E2E5E4;
+  --muted:        #475569;
+  --muted-2:      #64748B;
+
+  --europe:       #003399;
+  --europe-soft:  #5C6BC0;
+  --europe-bg:    #E8ECF8;
+
+  --americas:     #D32F2F;
+  --americas-soft:#FF8A65;
+  --americas-bg:  #FCEAEA;
+
+  --accent-dark:  #283593;
+  --accent-grey:  #78909C;
+  --slate:        #37474F;
+
+  --radius: 8px;
+  --font: "Segoe UI", -apple-system, "Segoe UI Semibold", Roboto, Helvetica, Arial, sans-serif;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;font-size:14px}
 
-/* ── Navigation ── */
-nav{background:#1e293b;border-bottom:1px solid #334155;display:flex;align-items:center;padding:0 24px;flex-wrap:wrap;gap:4px}
-.nav-brand{font-weight:700;font-size:15px;padding:14px 0;margin-right:24px;white-space:nowrap;color:#f1f5f9}
-.nav-tab{padding:14px 16px;font-size:13px;cursor:pointer;color:#94a3b8;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
-.nav-tab:hover{color:#cbd5e1}
-.nav-tab.active{color:#e2e8f0;border-bottom-color:#3b82f6}
+nav{
+  background:var(--card-bg);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;flex-wrap:wrap;gap:2px;
+}
+.nav-brand{
+  font-family:"Segoe UI Semibold",var(--font);
+  font-weight:700;font-size:15px;padding:16px 0;margin-right:32px;
+  white-space:nowrap;color:var(--fg);letter-spacing:.01em;
+}
+.nav-tab{
+  padding:16px 18px;font-size:13px;cursor:pointer;color:var(--muted-2);
+  border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none;
+}
+.nav-tab:hover{color:var(--fg)}
+.nav-tab.active{color:var(--europe);border-bottom-color:var(--europe);font-weight:600}
+.nav-link{
+  margin-left:auto;align-self:center;padding:7px 18px;
+  background:var(--europe);color:#fff;border-radius:6px;
+  font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.02em;
+}
+.nav-link:hover{background:var(--accent-dark)}
 
-/* ── Sélecteur d'année ── */
-.year-bar{background:#162032;border-bottom:1px solid #253347;padding:8px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.year-label{font-size:12px;color:#64748b;margin-right:4px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
-.year-btn{padding:5px 14px;border:1px solid #334155;background:transparent;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
-.year-btn.active{background:#3b82f6;border-color:#3b82f6;color:#fff;font-weight:500}
-.year-btn:hover:not(.active){border-color:#475569;color:#e2e8f0}
+.year-bar{
+  background:var(--card-bg);border-bottom:1px solid var(--border);
+  padding:10px 28px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.year-label{font-size:11px;color:var(--muted-2);margin-right:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.year-btn{
+  padding:5px 16px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);border-radius:6px;cursor:pointer;font-size:13px;
+  font-family:var(--font);transition:all .12s;
+}
+.year-btn.active{background:var(--europe);border-color:var(--europe);color:#fff;font-weight:600}
+.year-btn:hover:not(.active){border-color:var(--accent-grey);color:var(--fg)}
 
-/* ── Pages ── */
-.page{display:none;padding:20px 24px 40px}
+.page{display:none;padding:22px 28px 44px;max-width:1480px;margin:0 auto}
 .page.active{display:block}
 
-/* ── KPI row ── */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.kpi-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 18px}
-.kpi-lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:500}
-.kpi-val{font-size:24px;font-weight:600;color:#f1f5f9;line-height:1.1}
-.kpi-sub{font-size:11px;color:#475569;margin-top:4px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;
+}
+.kpi-lbl{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:600}
+.kpi-val{font-family:"Segoe UI Semibold",var(--font);font-size:28px;font-weight:700;color:var(--europe);line-height:1.1}
+.kpi-sub{font-size:11px;color:var(--accent-grey);margin-top:5px}
 
-/* ── Chart grids ── */
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .row-map{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}
 .row-full{margin-bottom:16px}
-.card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px}
-.card-title{font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.card-title{
+  font-family:"Segoe UI Semibold",var(--font);
+  font-size:13px;font-weight:600;color:var(--fg);margin-bottom:14px;
+}
 
-/* ── Map ── */
-#map{height:300px;border-radius:8px;z-index:0}
-.leaflet-popup-content-wrapper{background:#1e293b;border:1px solid #334155;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5);color:#e2e8f0}
-.leaflet-popup-tip{background:#1e293b}
-.leaflet-popup-content{font-size:13px;line-height:1.6;margin:10px 14px}
-.leaflet-popup-content b{color:#f1f5f9}
-.leaflet-popup-close-button{color:#94a3b8!important}
+#map{height:300px;border-radius:6px;z-index:0;border:1px solid var(--border)}
+.leaflet-popup-content-wrapper{background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 6px 24px rgba(30,41,59,.18);color:var(--fg)}
+.leaflet-popup-tip{background:#fff}
+.leaflet-popup-content{font-size:13px;line-height:1.65;margin:10px 14px;font-family:var(--font)}
+.leaflet-popup-content b{color:var(--fg);font-family:"Segoe UI Semibold",var(--font)}
+.leaflet-popup-close-button{color:var(--muted-2)!important}
 
-/* ── Legend pill ── */
-.legend-row{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8}
+.legend-row{display:flex;gap:18px;margin-bottom:12px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
 .legend-dot{width:10px;height:10px;border-radius:50%}
 
-/* ── Outlier table ── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{padding:8px 10px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #334155}
-.tbl td{padding:8px 10px;border-bottom:1px solid #253347;color:#cbd5e1}
+.tbl th{padding:9px 10px;text-align:left;font-size:11px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--bg);color:var(--muted)}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:#253347}
-.z-high{color:#f87171;font-weight:600}
-.z-mid{color:#fbbf24;font-weight:600}
+.tbl tr:hover td{background:var(--bg)}
+.z-high{color:var(--americas);font-weight:700}
+.z-mid{color:var(--accent-dark);font-weight:700}
 
-/* ── Deep dive ── */
 .bank-sel-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.bank-sel-row label{font-size:13px;color:#64748b;font-weight:500}
-select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer;min-width:200px}
-select:focus{outline:none;border-color:#3b82f6}
+.bank-sel-row label{font-size:13px;color:var(--muted);font-weight:600}
+select{
+  background:var(--card-bg);border:1px solid var(--border);color:var(--fg);
+  padding:9px 16px;border-radius:6px;font-size:13px;cursor:pointer;min-width:220px;
+  font-family:var(--font);
+}
+select:focus{outline:none;border-color:var(--europe)}
 
-/* ── Score gauge wrapper ── */
 .gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;position:relative;padding:8px 0}
 .gauge-canvas-wrap{position:relative;width:200px;height:200px;margin:0 auto}
-.gauge-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;font-weight:700;color:#f1f5f9;text-align:center;pointer-events:none}
-.gauge-denom{font-size:14px;color:#64748b;margin-top:-4px}
-.gauge-sub{font-size:12px;color:#64748b;margin-top:12px;text-align:center;line-height:1.5}
+.gauge-number{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:"Segoe UI Semibold",var(--font);
+  font-size:36px;font-weight:700;color:var(--fg);text-align:center;pointer-events:none;
+}
+.gauge-sub{font-size:12px;color:var(--muted-2);margin-top:14px;text-align:center;line-height:1.6}
+.gauge-sub b{color:var(--fg)}
+.status-ok{color:#1B6B3C;font-weight:600}
+.status-warn{color:var(--americas);font-weight:600}
 
-/* ── Data table ── */
 .tbl-wrap{overflow-x:auto}
 .data-tbl{width:100%;border-collapse:collapse;font-size:12px}
-.data-tbl th{padding:8px 10px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #334155}
+.data-tbl th{padding:9px 10px;text-align:right;font-size:11px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
 .data-tbl th:first-child{text-align:left}
-.data-tbl td{padding:8px 10px;border-bottom:1px solid #253347;color:#cbd5e1;text-align:right}
-.data-tbl td:first-child{text-align:left;font-weight:500;color:#f1f5f9}
-.data-tbl tr.highlight td{background:#1e3a5f;color:#f1f5f9}
-.data-tbl tr:hover td{background:#253347}
+.data-tbl td{padding:9px 10px;border-bottom:1px solid var(--bg);color:var(--muted);text-align:right}
+.data-tbl td:first-child{text-align:left;font-weight:600;color:var(--fg)}
+.data-tbl tr.highlight td{background:var(--europe-bg);color:var(--fg)}
+.data-tbl tr:hover td{background:var(--bg)}
 
-/* ── Error / loading ── */
-.error-box{background:#2d1b1b;border:1px solid #7f1d1d;border-radius:10px;padding:20px 24px;color:#f87171;font-size:14px;line-height:1.7;margin:24px 0}
-.error-box code{background:#450a0a;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
+.error-box{
+  background:var(--americas-bg);border:1px solid var(--americas-soft);
+  border-radius:var(--radius);padding:20px 24px;color:#7A1F1F;
+  font-size:13px;line-height:1.75;margin:24px 0;
+}
+.error-box code{background:#fff;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:12px;border:1px solid var(--americas-soft)}
 
 @media(max-width:768px){
   .kpi-row{grid-template-columns:1fr 1fr}
   .row-2,.row-map{grid-template-columns:1fr}
-  nav{padding:0 12px}
-  .page{padding:14px 12px 32px}
+  nav{padding:0 14px}
+  .page{padding:16px 14px 36px}
+  .nav-link{margin-left:0}
 }
 </style>
 </head>
 <body>
 
-<!-- ── NAVIGATION ───────────────────────────────────── -->
 <nav>
-  <span class="nav-brand">🏦 Santé Financière Bancaire</span>
+  <span class="nav-brand">Sante Financiere Bancaire</span>
   <div class="nav-tab active"  onclick="showPage('overview',this)">Vue d'ensemble</div>
-  <div class="nav-tab"         onclick="showPage('region',this)">Comparaison régions</div>
+  <div class="nav-tab"         onclick="showPage('region',this)">Comparaison regions</div>
   <div class="nav-tab"         onclick="showPage('bank',this)">Analyse par banque</div>
-<a href="powerbi.html"
-   style="margin-left:auto;padding:6px 16px;background:#f59e0b;color:#000;
-          border-radius:7px;font-size:12px;font-weight:700;text-decoration:none">
-  📊 Rapport Power BI
-</a>
+  <a href="powerbi.html" class="nav-link">Rapport Power BI</a>
 </nav>
 
-<!-- ── SÉLECTEUR D'ANNÉE ────────────────────────────── -->
 <div class="year-bar">
-  <span class="year-label">Année :</span>
+  <span class="year-label">Annee :</span>
   <button class="year-btn"        onclick="setYear(2021,this)">2021</button>
   <button class="year-btn"        onclick="setYear(2022,this)">2022</button>
   <button class="year-btn"        onclick="setYear(2023,this)">2023</button>
@@ -125,20 +180,16 @@ select:focus{outline:none;border-color:#3b82f6}
   <button class="year-btn active" onclick="setYear(2025,this)">2025</button>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE 1 — VUE D'ENSEMBLE
-     ══════════════════════════════════════════════════ -->
 <div id="page-overview" class="page active">
 
-  <!-- KPIs -->
   <div class="kpi-row">
     <div class="kpi-card">
-      <div class="kpi-lbl">Revenus cumulés</div>
+      <div class="kpi-lbl">Revenus cumules</div>
       <div class="kpi-val" id="kpi-rev">—</div>
       <div class="kpi-sub">Milliards USD</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-lbl">Résultat net cumulé</div>
+      <div class="kpi-lbl">Resultat net cumule</div>
       <div class="kpi-val" id="kpi-ni">—</div>
       <div class="kpi-sub">Milliards USD</div>
     </div>
@@ -148,39 +199,37 @@ select:focus{outline:none;border-color:#3b82f6}
       <div class="kpi-sub">% — toutes banques</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-lbl">Score santé moyen</div>
+      <div class="kpi-lbl">Score sante moyen</div>
       <div class="kpi-val" id="kpi-score">—</div>
       <div class="kpi-sub">/ 100 (composite)</div>
     </div>
   </div>
 
-  <!-- Carte + classement résultat net -->
   <div class="row-map">
     <div class="card">
-      <div class="card-title">🗺️ Localisation des sièges sociaux — taille bulle = résultat net</div>
+      <div class="card-title">Localisation des sieges sociaux — taille bulle = resultat net</div>
       <div class="legend-row">
-        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Amériques</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Europe</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--americas)"></div>Ameriques</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--europe)"></div>Europe</div>
       </div>
       <div id="map"></div>
     </div>
     <div class="card">
-      <div class="card-title">📊 Résultat net par banque (USD M)</div>
+      <div class="card-title">Resultat net par banque (USD M)</div>
       <canvas id="ch-ni-bar" style="max-height:320px"></canvas>
     </div>
   </div>
 
-  <!-- Score santé + anomalies -->
   <div class="row-2">
     <div class="card">
-      <div class="card-title">🏆 Classement — Score de santé financière (0–100)</div>
+      <div class="card-title">Classement — Score de sante financiere (0-100)</div>
       <canvas id="ch-score-bar" style="max-height:300px"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">⚠️ Anomalies statistiques détectées (z-score &gt; 2)</div>
+      <div class="card-title">Anomalies statistiques detectees (z-score &gt; 2)</div>
       <div class="tbl-wrap">
         <table class="tbl" id="tbl-outliers">
-          <thead><tr><th>Banque</th><th>Métrique</th><th>Valeur</th><th>Z-score</th></tr></thead>
+          <thead><tr><th>Banque</th><th>Metrique</th><th>Valeur</th><th>Z-score</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -189,52 +238,46 @@ select:focus{outline:none;border-color:#3b82f6}
 
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE 2 — COMPARAISON RÉGIONS
-     ══════════════════════════════════════════════════ -->
 <div id="page-region" class="page">
 
   <div class="row-full">
     <div class="card">
-      <div class="card-title">📈 Évolution du résultat net cumulé — Europe vs Amériques (2021–2025)</div>
+      <div class="card-title">Evolution du resultat net cumule — Europe vs Ameriques (2021-2025)</div>
       <canvas id="ch-trend" style="max-height:240px"></canvas>
     </div>
   </div>
 
   <div class="row-2">
     <div class="card">
-      <div class="card-title">⚡ Rentabilité vs Solidité — ROE (%) / CET1 (%)</div>
+      <div class="card-title">Rentabilite vs Solidite — ROE (%) / CET1 (%)</div>
       <div class="legend-row">
-        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Amériques</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Europe</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--americas)"></div>Ameriques</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--europe)"></div>Europe</div>
       </div>
       <canvas id="ch-scatter" style="max-height:280px"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">📊 ROE moyen par région — année sélectionnée</div>
+      <div class="card-title">ROE moyen par region — annee selectionnee</div>
       <canvas id="ch-roe-region" style="max-height:280px"></canvas>
     </div>
   </div>
 
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE 3 — ANALYSE PAR BANQUE
-     ══════════════════════════════════════════════════ -->
 <div id="page-bank" class="page">
 
   <div class="bank-sel-row">
-    <label>Sélectionner une banque :</label>
+    <label>Selectionner une banque :</label>
     <select id="bank-sel" onchange="updateBankPage()"></select>
   </div>
 
   <div class="row-2" style="align-items:stretch">
     <div class="card">
-      <div class="card-title">📈 Revenus & Résultat net sur 5 ans (USD M)</div>
+      <div class="card-title">Revenus et resultat net sur 5 ans (USD M)</div>
       <canvas id="ch-bank-trend" style="max-height:260px"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">🎯 Score de santé financière — année sélectionnée</div>
+      <div class="card-title">Score de sante financiere — annee selectionnee</div>
       <div class="gauge-wrap">
         <div class="gauge-canvas-wrap">
           <canvas id="ch-bank-gauge"></canvas>
@@ -246,19 +289,19 @@ select:focus{outline:none;border-color:#3b82f6}
   </div>
 
   <div class="card">
-    <div class="card-title">🗂️ Données détaillées (2021–2025) — ligne en surbrillance = année sélectionnée</div>
+    <div class="card-title">Donnees detaillees (2021-2025) — ligne en surbrillance = annee selectionnee</div>
     <div class="tbl-wrap">
       <table class="data-tbl">
         <thead>
           <tr>
-            <th>Année</th>
+            <th>Annee</th>
             <th>Revenus (M$)</th>
-            <th>Résultat net (M$)</th>
+            <th>Resultat net (M$)</th>
             <th>ROE %</th>
             <th>CET1 %</th>
             <th>Marge %</th>
             <th>Croiss. NI</th>
-            <th>Score santé</th>
+            <th>Score sante</th>
           </tr>
         </thead>
         <tbody id="bank-tbody"></tbody>
@@ -268,44 +311,42 @@ select:focus{outline:none;border-color:#3b82f6}
 
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     JAVASCRIPT
-     ══════════════════════════════════════════════════ -->
 <script>
-/* ── Globals ──────────────────────────────────────── */
 let DATA = null;
 let currentYear = 2025;
 const charts = {};
 let leafletMap = null;
 let mapMarkers = [];
 
-const RC = { Americas: '#3b82f6', Europe: '#d97706' };
-const RF = { Americas: 'Amériques', Europe: 'Europe' };
+const RC = { Americas: '#D32F2F', Europe: '#003399' };
+const RF = { Americas: 'Ameriques', Europe: 'Europe' };
 const MF = {
-  NetIncome_USD_M:      'Résultat net (M$)',
+  NetIncome_USD_M:      'Resultat net (M$)',
   ROE_Pct:              'ROE (%)',
-  FinancialHealthScore: 'Score santé'
+  FinancialHealthScore: 'Score sante'
 };
 
-/* ── Formatters ───────────────────────────────────── */
+const TICK_COLOR  = '#64748B';
+const GRID_COLOR  = '#E2E5E4';
+const LABEL_COLOR = '#475569';
+Chart.defaults.font.family = '"Segoe UI", sans-serif';
+
 const fmtN = n => n == null ? '—' : Math.round(n).toLocaleString('fr');
 const fmtB = n => n == null ? '—' : (n / 1000).toFixed(0) + ' Mds$';
 const fmtP = n => n == null ? '—' : n.toFixed(1) + '%';
 const fmtS = n => n == null ? '—' : n.toFixed(1);
 
-/* ── Data loading ─────────────────────────────────── */
 async function loadData() {
   const candidates = ['./data/summary_stats.json', '../data/summary_stats.json'];
   for (const p of candidates) {
     try {
       const r = await fetch(p);
       if (r.ok) return r.json();
-    } catch (_) { /* essaie le suivant */ }
+    } catch (_) { }
   }
   return null;
 }
 
-/* ── Helpers ──────────────────────────────────────── */
 function byYear(year) {
   return DATA.series.filter(r => r.year === year);
 }
@@ -316,16 +357,11 @@ function makeChart(id, cfg) {
   return charts[id];
 }
 
-const GRID_COLOR  = '#1e293b';
-const TICK_COLOR  = '#64748b';
-const LABEL_COLOR = '#94a3b8';
-
-/* ── Leaflet map ──────────────────────────────────── */
 function initMap() {
   leafletMap = L.map('map', { scrollWheelZoom: false, zoomControl: true })
     .setView([40, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 10
   }).addTo(leafletMap);
 }
@@ -339,22 +375,21 @@ function refreshMap(yearData) {
     const m = L.circleMarker([r.lat, r.lon], {
       radius: rad,
       fillColor: RC[r.region],
-      color: '#0f172a',
+      color: '#FFFFFF',
       weight: 2,
-      fillOpacity: 0.78
+      fillOpacity: 0.82
     }).addTo(leafletMap);
     m.bindPopup(`
       <b>${r.bank}</b><br>
       ${RF[r.region]}<br>
-      <b>Résultat net :</b> ${fmtN(r.netIncome)} M$<br>
+      <b>Resultat net :</b> ${fmtN(r.netIncome)} M$<br>
       <b>ROE :</b> ${fmtP(r.roe)} &nbsp;|&nbsp; <b>CET1 :</b> ${fmtP(r.cet1)}<br>
-      <b>Score santé :</b> ${fmtS(r.healthScore)} / 100
+      <b>Score sante :</b> ${fmtS(r.healthScore)} / 100
     `);
     mapMarkers.push(m);
   });
 }
 
-/* ── Page 1 charts ────────────────────────────────── */
 function refreshKPIs(yd) {
   const totRev   = yd.reduce((s, r) => s + (r.revenue   || 0), 0);
   const totNI    = yd.reduce((s, r) => s + (r.netIncome || 0), 0);
@@ -366,20 +401,24 @@ function refreshKPIs(yd) {
   document.getElementById('kpi-score').textContent = avgScore.toFixed(1);
 }
 
+function shortName(n) {
+  return n.replace('JPMorgan Chase','JPMorgan').replace('Bank of America','BofA').replace('Goldman Sachs','Goldman');
+}
+
 function refreshNIBar(yd) {
   const sorted = [...yd].sort((a, b) => b.netIncome - a.netIncome);
   makeChart('ch-ni-bar', {
     type: 'bar',
     data: {
-      labels: sorted.map(r => r.bank.replace('JPMorgan Chase','JPMorgan').replace('Bank of America','BofA').replace('Goldman Sachs','Goldman')),
-      datasets: [{ data: sorted.map(r => r.netIncome), backgroundColor: sorted.map(r => RC[r.region] + 'cc'), borderRadius: 4, borderSkipped: false }]
+      labels: sorted.map(r => shortName(r.bank)),
+      datasets: [{ data: sorted.map(r => r.netIncome), backgroundColor: sorted.map(r => RC[r.region]), borderRadius: 3, borderSkipped: false }]
     },
     options: {
       indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + fmtN(c.raw) + ' M$' } } },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor:'#1E293B', callbacks: { label: c => ' ' + fmtN(c.raw) + ' M$' } } },
       scales: {
         x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
-        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } } }
+        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } }, grid: { display:false } }
       }
     }
   });
@@ -387,19 +426,18 @@ function refreshNIBar(yd) {
 
 function refreshScoreBar(yd) {
   const sorted = [...yd].sort((a, b) => (b.healthScore||0) - (a.healthScore||0));
-  const bg = sorted.map((_, i) => ['#f59e0b','#94a3b8','#a16207','#334155','#334155','#334155','#334155','#334155','#334155','#334155','#334155'][i]);
   makeChart('ch-score-bar', {
     type: 'bar',
     data: {
-      labels: sorted.map(r => r.bank.replace('JPMorgan Chase','JPMorgan').replace('Bank of America','BofA').replace('Goldman Sachs','Goldman')),
-      datasets: [{ data: sorted.map(r => +(r.healthScore||0).toFixed(1)), backgroundColor: bg, borderRadius: 4, borderSkipped: false }]
+      labels: sorted.map(r => shortName(r.bank)),
+      datasets: [{ data: sorted.map(r => +(r.healthScore||0).toFixed(1)), backgroundColor: sorted.map(r => RC[r.region]), borderRadius: 3, borderSkipped: false }]
     },
     options: {
       indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' Score : ' + c.raw + ' / 100' } } },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor:'#1E293B', callbacks: { label: c => ' Score : ' + c.raw + ' / 100' } } },
       scales: {
         x: { min: 0, max: 100, ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
-        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } } }
+        y: { ticks: { color: LABEL_COLOR, font: { size: 11 } }, grid: { display:false } }
       }
     }
   });
@@ -409,7 +447,7 @@ function refreshOutlierTable(year) {
   const tbody = document.querySelector('#tbl-outliers tbody');
   const outs = (DATA.outliers || []).filter(o => o.year === year);
   if (!outs.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="color:#475569;padding:14px 10px;text-align:center">Aucune anomalie statistique pour cette année</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="color:#94A3B8;padding:16px 10px;text-align:center">Aucune anomalie statistique pour cette annee</td></tr>';
     return;
   }
   tbody.innerHTML = outs.map(o => {
@@ -418,25 +456,25 @@ function refreshOutlierTable(year) {
   }).join('');
 }
 
-/* ── Page 2 charts ────────────────────────────────── */
 function refreshTrendChart() {
   const years = DATA.years;
   const datasets = Object.keys(RC).map(reg => ({
     label: RF[reg],
     data: years.map(y => DATA.series.filter(r => r.year === y && r.region === reg).reduce((s, r) => s + r.netIncome, 0)),
     borderColor: RC[reg],
-    backgroundColor: RC[reg] + '18',
+    backgroundColor: RC[reg] + '14',
     fill: true,
-    tension: 0.35,
-    pointRadius: 5,
-    pointHoverRadius: 7,
+    tension: 0.3,
+    pointRadius: 4,
+    pointBackgroundColor: RC[reg],
+    pointHoverRadius: 6,
     borderWidth: 2.5
   }));
   makeChart('ch-trend', {
     type: 'line',
     data: { labels: years, datasets },
     options: {
-      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true } } },
+      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true, font:{size:12} } }, tooltip:{backgroundColor:'#1E293B'} },
       scales: {
         x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
         y: { ticks: { color: TICK_COLOR, callback: v => fmtB(v) }, grid: { color: GRID_COLOR } }
@@ -448,8 +486,8 @@ function refreshTrendChart() {
 function refreshScatter(yd) {
   const datasets = Object.keys(RC).map(reg => ({
     label: RF[reg],
-    backgroundColor: RC[reg] + 'cc',
-    pointRadius: 9, pointHoverRadius: 12,
+    backgroundColor: RC[reg],
+    pointRadius: 8, pointHoverRadius: 11,
     data: yd.filter(r => r.region === reg).map(r => ({ x: r.cet1, y: r.roe, bank: r.bank }))
   }));
   makeChart('ch-scatter', {
@@ -457,8 +495,8 @@ function refreshScatter(yd) {
     data: { datasets },
     options: {
       plugins: {
-        legend: { labels: { color: LABEL_COLOR, usePointStyle: true } },
-        tooltip: { callbacks: { label: c => `${c.raw.bank} : ROE ${c.raw.y}%  CET1 ${c.raw.x}%` } }
+        legend: { labels: { color: LABEL_COLOR, usePointStyle: true, font:{size:12} } },
+        tooltip: { backgroundColor:'#1E293B', callbacks: { label: c => `${c.raw.bank} : ROE ${c.raw.y}%  CET1 ${c.raw.x}%` } }
       },
       scales: {
         x: { title: { display: true, text: 'Ratio CET1 (%)', color: TICK_COLOR }, ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
@@ -478,19 +516,18 @@ function refreshROERegion(yd) {
     type: 'bar',
     data: {
       labels: regs.map(r => RF[r]),
-      datasets: [{ label: 'ROE moyen (%)', data: avgs, backgroundColor: regs.map(r => RC[r] + 'cc'), borderRadius: 8, borderSkipped: false }]
+      datasets: [{ label: 'ROE moyen (%)', data: avgs, backgroundColor: regs.map(r => RC[r]), borderRadius: 5, borderSkipped: false, maxBarThickness: 90 }]
     },
     options: {
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ROE : ' + c.raw + '%' } } },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor:'#1E293B', callbacks: { label: c => ' ROE : ' + c.raw + '%' } } },
       scales: {
-        x: { ticks: { color: LABEL_COLOR } },
+        x: { ticks: { color: LABEL_COLOR }, grid: { display:false } },
         y: { ticks: { color: TICK_COLOR, callback: v => v + '%' }, grid: { color: GRID_COLOR } }
       }
     }
   });
 }
 
-/* ── Page 3 : Bank deep dive ──────────────────────── */
 function populateBankSelect() {
   const sel = document.getElementById('bank-sel');
   sel.innerHTML = DATA.banks.map((b, i) => `<option value="${i}">${b.name}</option>`).join('');
@@ -508,19 +545,19 @@ function updateBankPage() {
   const allYD    = byYear(currentYear);
   const avgScore = allYD.reduce((s, r) => s + (r.healthScore || 0), 0) / allYD.length;
   const bankScore = yearRow?.healthScore || 0;
+  const region = yearRow?.region || 'Europe';
 
-  /* Trend chart */
   makeChart('ch-bank-trend', {
     type: 'line',
     data: {
       labels: series.map(r => r.year),
       datasets: [
-        { label: 'Revenus (M$)',     data: series.map(r => r.revenue),   borderColor: '#3b82f6', backgroundColor: '#3b82f610', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 2.5 },
-        { label: 'Résultat net (M$)',data: series.map(r => r.netIncome), borderColor: '#d97706', backgroundColor: '#d9770610', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 2.5 }
+        { label: 'Revenus (M$)',      data: series.map(r => r.revenue),   borderColor: '#003399', backgroundColor: '#00339910', fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor:'#003399', borderWidth: 2.5 },
+        { label: 'Resultat net (M$)', data: series.map(r => r.netIncome), borderColor: '#D32F2F', backgroundColor: '#D32F2F10', fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor:'#D32F2F', borderWidth: 2.5 }
       ]
     },
     options: {
-      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true } } },
+      plugins: { legend: { labels: { color: LABEL_COLOR, usePointStyle: true, font:{size:12} } }, tooltip:{backgroundColor:'#1E293B'} },
       scales: {
         x: { ticks: { color: TICK_COLOR }, grid: { color: GRID_COLOR } },
         y: { ticks: { color: TICK_COLOR, callback: v => fmtN(v) }, grid: { color: GRID_COLOR } }
@@ -528,43 +565,40 @@ function updateBankPage() {
     }
   });
 
-  /* Gauge */
   if (charts['ch-bank-gauge']) charts['ch-bank-gauge'].destroy();
-  const gaugeColor = bankScore >= avgScore ? '#22c55e' : '#f59e0b';
+  const gaugeColor = bankScore >= avgScore ? '#1B6B3C' : RC[region];
   charts['ch-bank-gauge'] = new Chart(
     document.getElementById('ch-bank-gauge').getContext('2d'), {
       type: 'doughnut',
       data: {
         datasets: [{
           data: [bankScore, 100 - bankScore],
-          backgroundColor: [gaugeColor, '#1e3a5f'],
+          backgroundColor: [gaugeColor, '#EEF1F0'],
           borderWidth: 0
         }]
       },
-      options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+      options: { cutout: '74%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 500 } }
     }
   );
   document.getElementById('gauge-num').textContent = bankScore.toFixed(1);
   document.getElementById('gauge-sub').innerHTML =
     `Moyenne groupe (${currentYear}) : <b>${avgScore.toFixed(1)}</b> / 100<br>` +
     (bankScore >= avgScore
-      ? `<span style="color:#22c55e">✅ Au-dessus de la moyenne</span>`
-      : `<span style="color:#f59e0b">⚠️ En-dessous de la moyenne</span>`);
+      ? `<span class="status-ok">Au-dessus de la moyenne</span>`
+      : `<span class="status-warn">En-dessous de la moyenne</span>`);
 
-  /* Data table */
   const prevNI = {};
   series.forEach((r, i) => { if (i > 0) prevNI[r.year] = series[i - 1].netIncome; });
 
   document.getElementById('bank-tbody').innerHTML = series.map(r => {
     const hi   = r.year === currentYear ? ' highlight' : '';
-    const star = r.year === currentYear ? ' ★' : '';
     const growthVal = prevNI[r.year] != null
       ? ((r.netIncome - prevNI[r.year]) / prevNI[r.year] * 100)
       : null;
     const growthStr = growthVal == null ? '—'
-      : `<span style="color:${growthVal>=0?'#22c55e':'#f87171'}">${growthVal>=0?'+':''}${growthVal.toFixed(1)}%</span>`;
+      : `<span style="color:${growthVal>=0?'#1B6B3C':'#D32F2F'}">${growthVal>=0?'+':''}${growthVal.toFixed(1)}%</span>`;
     return `<tr class="${hi}">
-      <td>${r.year}${star}</td>
+      <td>${r.year}</td>
       <td>${fmtN(r.revenue)}</td>
       <td>${fmtN(r.netIncome)}</td>
       <td>${fmtP(r.roe)}</td>
@@ -576,7 +610,6 @@ function updateBankPage() {
   }).join('');
 }
 
-/* ── Master refresh ───────────────────────────────── */
 function refreshAll() {
   const yd = byYear(currentYear);
   refreshKPIs(yd);
@@ -584,16 +617,13 @@ function refreshAll() {
   refreshNIBar(yd);
   refreshScoreBar(yd);
   refreshOutlierTable(currentYear);
-  /* Region page — always kept in sync so switching is instant */
   refreshScatter(yd);
   refreshROERegion(yd);
-  /* Bank page only if visible */
   if (document.getElementById('page-bank').classList.contains('active')) {
     updateBankPage();
   }
 }
 
-/* ── Year selector ────────────────────────────────── */
 function setYear(year, btn) {
   currentYear = year;
   document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
@@ -601,24 +631,21 @@ function setYear(year, btn) {
   refreshAll();
 }
 
-/* ── Tab navigation ───────────────────────────────── */
 function showPage(id, tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   tab.classList.add('active');
-  /* Fix Leaflet rendering when the map was hidden */
   if (id === 'overview' && leafletMap) setTimeout(() => leafletMap.invalidateSize(), 80);
   if (id === 'bank') updateBankPage();
 }
 
-/* ── Init ─────────────────────────────────────────── */
 (async () => {
   DATA = await loadData();
   if (!DATA) {
     const err = `<div class="error-box">
-      <b>⚠️ Impossible de charger les données.</b><br><br>
-      Assure-toi d'avoir exécuté le pipeline avant d'ouvrir ce fichier :<br><br>
+      <b>Impossible de charger les donnees.</b><br><br>
+      Assure-toi d'avoir execute le pipeline avant d'ouvrir ce fichier :<br><br>
       <code>1. cd java && javac BankFinancialAnalyzer.java && java BankFinancialAnalyzer</code><br>
       <code>2. node js/validate_and_summarize.js</code><br><br>
       Ensuite, sers le projet via <code>npx serve .</code> et ouvre<br>
