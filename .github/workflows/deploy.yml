@@ -38,10 +38,10 @@ jobs:
       - name: Validation Node
         run: node js/validate_and_summarize.js
 
-      - name: Preparation site
+     - name: Preparation site
         run: |
           mkdir -p _site/data
-          cp dashboard/index.html _site/index.html
+          cp -r dashboard/. _site/
           cp data/summary_stats.json _site/data/summary_stats.json
 
       - uses: actions/upload-pages-artifact@v3
